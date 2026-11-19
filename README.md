@@ -39,6 +39,7 @@ Migrating my home lab services off a gaming desktop and onto an always-on, low-p
      │ Homepage           │  service dashboard with live widgets
      │ Watchtower         │  scheduled auto-updates + Telegram notifications
      │ Wazuh SIEM         │  see wazuh-soc-dashboard repo
+     │ Mission Control    │  live network-map dashboard + Threat Forecast view
      └────────────────────┘
 ```
 
@@ -70,6 +71,12 @@ Each service followed the same pattern: **stand up on the Mac mini → test → 
 - **Homepage dashboard** with live widgets for Jellyfin, Immich, Pi-hole and Nginx Proxy Manager — one page to see everything
 - **Watchtower** auto-updates only the low-risk containers (Pi-hole, dnscrypt-proxy) nightly, and pushes a **Telegram** message after each run
 - Secrets (bot tokens) kept in a `.env` file locked to owner-only permissions (`chmod 600`), never in the compose file
+- **Home Lab Mission Control** — custom network-map dashboard and "Threat Forecast" view, each in its own container (see [ai-automation-builds](https://github.com/jchungit/ai-automation-builds))
+- **Screen lock off, auto-login on** — the display never locks, so the server can be checked at the keyboard without signing in again; containers and Tailscale keep running either way
+
+### Phase 4 — Reducing Public Exposure *(in progress)*
+- Moved the living-room TV's Jellyfin app to the server's **direct LAN (Local Area Network) address** instead of the public domain name
+- Next: remove the 80/443 port forwards so media is reachable **only over Tailscale** from outside the house — no open inbound ports at all
 
 ---
 
@@ -81,6 +88,8 @@ Each service followed the same pattern: **stand up on the Mac mini → test → 
 | Two Jellyfin servers showing in the app | Old desktop server still running during migration | Chose the Mac mini as primary; old server stopped and kept as a backup |
 | Wazuh dashboard wouldn't start on 443 | Port already taken by the reverse proxy | Moved the dashboard to a different HTTPS port |
 | Devices briefly lost ad-blocking | DHCP DNS temporarily set to Auto during testing | Restored Pi-hole as the only DNS server for client VLANs |
+| Server kept asking for a password | macOS **screen lock** (separate from login) kicked in when the display slept | Set "require password" to *Never*; auto-login still handles reboots |
+| Movie stopped mid-playback on the TV, but played fine on the server | Not the server — UniFi client data showed the **TV dropped off Wi-Fi** at the exact minute playback stopped; firewall and IPS (Intrusion Prevention System) had blocked nothing | Full power-cycle of the TV to reset its Wi-Fi; option to lock it to 5 GHz or wire it if it recurs |
 
 ---
 
@@ -95,9 +104,9 @@ Each service followed the same pattern: **stand up on the Mac mini → test → 
 ## 📌 Next Steps
 - [ ] Uptime Kuma for down-alerts to the same Telegram bot
 - [ ] Backup plan for photos and service data (second local drive + offsite)
-- [ ] Move Jellyfin to Tailscale-only and close 80/443 entirely
+- [ ] Finish moving Jellyfin to Tailscale-only and close 80/443 entirely *(TV already moved to the LAN address)*
 
 ---
 
 ## 🧠 Skills Demonstrated
-`Docker` · `Docker Compose` · `macOS server administration` · `Reverse proxy / TLS` · `DNS filtering` · `Tailscale (WireGuard VPN)` · `VLAN segmentation` · `Change management & rollback planning` · `Secrets handling` · `Service migration`
+`Docker` · `Docker Compose` · `macOS server administration` · `Reverse proxy / TLS` · `DNS filtering` · `Tailscale (WireGuard VPN)` · `VLAN segmentation` · `Change management & rollback planning` · `Root-cause analysis` · `Secrets handling` · `Service migration`
